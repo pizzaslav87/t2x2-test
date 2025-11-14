@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Насколько ты подходишь Антону t2x2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'SF Pro Display', sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      flex-direction: column;
+    }
+
+#background-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;          
+  object-position: center;    
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+@media (max-width: 600px) {
+  #background-img {
+    transform: scale(1);
+  }
+}
+
+
+
+    h1.title {
+  font-size: 40px;
+  color: #000;
+  font-weight: 600;
+  position: absolute;
+  top: 20px;
+  left: 47%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  animation: fadeInDown 1s ease forwards;
+}
+
+
+
+    }
+
+    .answers button {
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .answers button:active {
+      transform: scale(0.95);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .quiz-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 90vw;
+      width: 400px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.5s ease forwards;
+      min-height: 400px;
+      box-sizing: border-box;
+      z-index: 1;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.5s ease, transform 1.5s ease;
+    }
+
+    .fade.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .answers button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      background-color: #e5e5e5;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .answers button:hover {
+      background-color: #d0d0d0;
+    }
+
+    .result {
+      font-size: 18px;
+      line-height: 1.6;
+      animation: fadeInUp 2s ease forwards;
+    }
+
+    .question-counter {
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .restart-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007aff; 
+      color: #fff;
+      cursor: pointer;
+    }
+
+    canvas.confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+    }
+
+    .telegram-tag {
+  margin-top: 30px;
+  font-size: 20px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.telegram-tag a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.telegram-tag a:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.emoji {
+  font-size: 1em; 
+  display: inline; 
+  margin-left: 6px;
+  vertical-align: baseline;
+}
+
+
+@media (max-width: 600px) {
+  .quiz-container {
+    padding: 20px;
+    min-height: auto;
+    width: 90vw;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .answers button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  h1.title {
+    font-size: 18px;
+    text-align: center;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <img src="IMG_8924-fotor-bg-remover-202507301669.png" id="background-img" alt="Background" />
+
+  <h1 class="title">Насколько ты подходишь Антону t2x2? <span class="emoji">🍕</span></h1>
+    <div class="quiz-container" id="quiz">
+    <div class="question-counter fade" id="counter"></div>
+    <div class="question fade" id="question"></div>
+    <div class="answers fade" id="answers"></div>
+    <div class="telegram-tag">
+  <a href="https://t.me/pizzaslav87" target="_blank">@pizzaslav87🍕</a>
+</div>
+    <div id="result" class="result"></div>
+    <button class="restart-btn" id="restart" style="display:none;">Начать заново</button>
+  </div>
+
+  <canvas class="confetti" id="confetti-canvas"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+  const questions = [
+    {
+      question: "Что заточишь на завтрак:",
+      image: "images/q1.jpg",
+      answers: ["Пельмени", "Пиву", "Пиццу", "Корм Чаппи"]
+    },
+    {
+      question: "Твой любимый car:",
+      image: "images/q2.jpg",
+      answers: ["Сасный Джип", "Несасный Джип", "Каркушки", "Вольфсваген"]
+    },
+    {
+      question: "Кого спасешь в апакалипсес:",
+      image: "images/q3.jpg",
+      answers: ["Папу Дрейка", "Дрейка", "Хавчик", "Лаки"]
+    },
+    {
+      question: "Что будешь делать, чтобы содержать Антона:",
+      image: "images/q4.jpg",
+      answers: ["Эскортить", "Сдавать бутылки", "Вести Онлик", "Грумить мини пигов"]
+    },
+    {
+      question: "Кто ты по знаку зодиака?",
+      image: "images/q5.jpg",  
+      answers: ["Крипер", "МегаЧёрт", "Жук Калоед", "Собаки по 500"]
+    }
+  ];
+
+  const types = {
+    A: ["Пельмени", "Вольфсваген", "Лаки", "Вести Онлик", "Крипер"],
+    B: ["Корм Чаппи", "Несасный Джип", "Хавчик", "Сдавать бутылки", "МегаЧёрт"],
+    C: ["Пиву", "Сасный Джип", "Дрейка", "Эскортить", "Собаки по 500"],
+    V: ["Пиццу", "Каркушки", "Папу Дрейка", "Грумить мини пигов", "Жук Калоед"]
+  };
+
+  const resultsText = {
+    A: "Емае, Антоха решил сам пройти тест или каво? Ну крч ты 100% совместимость. Поздравляю! Теперь ты можешь кичиться перед падружанями или другалечками, шо являешься топовой парой для этова челика.",
+    B: "Кхм... Как сказать-то... Тут мимо конеш, но зато ты индивидуальный МегаЧёрт, ну! Один вопрос ток: Чаппи с молоком или всуху?",
+    C: "Почем часик сейчас? Ладнааа... Зато Тоха голодать не будет и всегда додепчик на собачек есть. Сразу видно шо ты стараешься для вашей пары. Красава!",
+    V: "Странный ты другалечек однако, но на таких все и держится! Советую не пропускать день ног, иначе как ты Тоху на каркушках собрался катать?"
+  };
+
+  let currentQuestion = 0;
+  let userAnswers = [];
+
+  const questionEl = document.getElementById('question');
+  const answersEl = document.getElementById('answers');
+  const resultEl = document.getElementById('result');
+  const counterEl = document.getElementById('counter');
+  const restartBtn = document.getElementById('restart');
+  const backgroundImg = document.getElementById('background-img');
+
+  function showFade(...elements) {
+    elements.forEach(el => {
+      el.classList.remove('show');
+      void el.offsetWidth;
+      el.classList.add('fade', 'show');
+    });
+  }
+
+  function changeBackground(src) {
+    backgroundImg.style.opacity = 0;
+    setTimeout(() => {
+      backgroundImg.src = src;
+      backgroundImg.style.opacity = 1;
+    }, 300);
+  }
+
+  function showQuestion() {
+    const q = questions[currentQuestion];
+    counterEl.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+    questionEl.textContent = q.question;
+    changeBackground(q.image);
+
+    answersEl.innerHTML = '';
+    q.answers.forEach(answer => {
+      const btn = document.createElement('button');
+      btn.textContent = answer;
+      btn.onclick = () => handleAnswer(answer);
+      answersEl.appendChild(btn);
+    });
+
+    showFade(counterEl, questionEl, answersEl);
+  }
+
+  function handleAnswer(answer) {
+    userAnswers.push(answer);
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    questionEl.style.display = 'none';
+    answersEl.style.display = 'none';
+    counterEl.style.display = 'none';
+
+    const scores = { A: 0, B: 0, C: 0, V: 0 };
+    userAnswers.forEach(answer => {
+      for (let type in types) {
+        if (types[type].includes(answer)) {
+          scores[type]++;
+        }
+      }
+    });
+    const topType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+    changeBackground('images/final-bg.jpg'); 
+    resultEl.textContent = resultsText[topType];
+    showFade(resultEl);
+    restartBtn.style.display = 'inline-block';
+    showFade(restartBtn);
+    launchConfetti();
+  }
+
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
+    setInterval(() => {
+      myConfetti({
+        particleCount: 30,
+        spread: 260,
+        startVelocity: 20,
+        origin: { x: Math.random(), y: 0 },
+        colors: ['#FFC700', '#FF0000', '#2E3192', '#41BBC7']
+      });
+    }, 300);
+  }
+
+  restartBtn.onclick = () => location.reload();
+  showQuestion();
+  </script>
+</body>
+</html>
